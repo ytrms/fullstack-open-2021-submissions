@@ -2,8 +2,8 @@ import React, { useState } from 'react'
 
 const Statistics = ({ good, neutral, bad }) => {
 
-  let avg = (good * 1 + neutral * 0 + bad * -1) / (good + neutral + bad)
-  let percentPositive = (good / (good + neutral + bad)) * 100
+  let avg = Number.parseFloat((good * 1 + neutral * 0 + bad * -1) / (good + neutral + bad)).toPrecision(2)
+  let percentPositive = Number.parseFloat((good / (good + neutral + bad)) * 100).toPrecision(4)
 
   if (good + neutral + bad === 0) {
     return (
@@ -15,23 +15,26 @@ const Statistics = ({ good, neutral, bad }) => {
 
   return (
     <div>
-      <div>
-        <StatisticLine text="good" value={good} />
-        <StatisticLine text="neutral" value={neutral} />
-        <StatisticLine text="bad" value={bad} />
-        <StatisticLine text="all" value={good + neutral + bad} />
-        <StatisticLine text="average" value={avg} />
-        <StatisticLine text="positive" value={percentPositive + "%"} />
-      </div>
+      <table>
+        <tbody>
+          <StatisticLine text="good" value={good} />
+          <StatisticLine text="neutral" value={neutral} />
+          <StatisticLine text="bad" value={bad} />
+          <StatisticLine text="all" value={good + neutral + bad} />
+          <StatisticLine text="average" value={avg} />
+          <StatisticLine text="positive" value={percentPositive + "%"} />
+        </tbody>
+      </table>
     </div>
   )
 }
 
 const StatisticLine = ({ text, value }) => {
   return (
-    <div>
-      {text} {value}
-    </div>
+    <tr>
+      <td>{text}</td>
+      <td>{value}</td>
+    </tr>
   )
 }
 
