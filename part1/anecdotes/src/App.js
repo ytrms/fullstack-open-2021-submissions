@@ -11,13 +11,19 @@ const App = () => {
     'Programming without an extremely heavy use of console.log is same as if a doctor would refuse to use x-rays or blood tests when diagnosing patients'
   ]
 
-  const [selected, setSelected] = useState(0)
-
   let initialVotes = new Array(anecdotes.length).fill(0);
-  const [votes, setVotes] = useState(initialVotes);
 
-  const pickAnecdote = () => {
-    const randIndex = Math.floor(Math.random() * anecdotes.length);
+  const [votes, setVotes] = useState(initialVotes);
+  const [selected, setSelected] = useState(Math.floor(Math.random() * anecdotes.length))
+  const [highestVotedIndex, setHighestVoted] = useState();
+
+  const pickRandomAnecdote = () => {
+    let randIndex = Math.floor(Math.random() * anecdotes.length);
+
+    while (randIndex === selected) {
+      randIndex = Math.floor(Math.random() * anecdotes.length);
+    }
+
     setSelected(randIndex);
   }
 
@@ -25,14 +31,18 @@ const App = () => {
     let increasedVotes = [...votes];
     increasedVotes[selected]++;
     setVotes(increasedVotes);
+    setHighestVoted(increasedVotes.indexOf(Math.max(...increasedVotes)));
   }
+
 
   return (
     <div>
       {anecdotes[selected]}<br />
       has {votes[selected]} votes.<br />
       <button onClick={increaseVote}>Vote</button>
-      <button onClick={pickAnecdote}>Next anecdote</button>
+      <button onClick={pickRandomAnecdote}>Next anecdote</button>
+      <h1>Highest voted anecdote</h1>
+      {anecdotes[highestVotedIndex]}
     </div>
   )
 }
