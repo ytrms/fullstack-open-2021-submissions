@@ -1,5 +1,54 @@
 import React, { useState, useEffect } from "react"
 import axios from 'axios'
+const api_key = process.env.REACT_APP_WEATHERAPI_KEY
+
+const CountryView = ({ country }) => {
+
+  const [weather, setWeather] = useState([])
+  const [condition, setCondition] = useState([])
+
+  const languages = []
+  for (const key in country.languages) {
+    const language = country.languages[key];
+    languages.push({ key: key, language: language })
+  }
+
+  useEffect(() => {
+    axios
+      .get('http://api.weatherapi.com/v1/current.json', {
+        params: {
+          key: api_key,
+          q: country.capital[0]
+        }
+      })
+      .then(response => {
+        setCondition(response.data.current.condition)
+        setWeather(response.data.current)
+      })
+  }, [])
+
+  return (
+    <div>
+      <h1>{country.name.common}</h1>
+      <div>capital: {country.capital[0]}</div>
+      <div>population: {country.population}</div>
+      <h2>Languages</h2>
+      <ul>
+        {languages.map(language => {
+          return (
+            <li key={language.key}>{language.language}</li>
+          )
+        })}
+      </ul>
+      <img src={country.flags.png} alt={`Flag of ${country.name.common}`} width="200px" />
+      <h2>Weather in {country.capital[0]}</h2>
+      <div>Temperature: {weather.temp_c} Celsius</div>
+      <img src={condition.icon} alt={condition.text} />
+      <div>{condition.text}</div>
+      <div>Wind: {weather.wind_kph} kph direction {weather.wind_dir}</div>
+    </div>
+  )
+}
 
 const CountryList = ({ countries, setNewSearch }) => {
   if (countries.length > 10) {
@@ -8,27 +57,8 @@ const CountryList = ({ countries, setNewSearch }) => {
 
   if (countries.length === 1) {
     const country = countries[0]
-    const languages = []
-    for (const key in country.languages) {
-      const language = country.languages[key];
-      languages.push({ key: key, language: language })
-    }
-
     return (
-      <div>
-        <h1>{country.name.common}</h1>
-        <div>capital: {country.capital[0]}</div>
-        <div>population: {country.population}</div>
-        <h2>Languages</h2>
-        <ul>
-          {languages.map(language => {
-            return (
-              <li key={language.key}>{language.language}</li>
-            )
-          })}
-        </ul>
-        <img src={country.flags.png} alt={`Flag of ${country.name.common}`} width="200px" />
-      </div>
+      <CountryView country={country} />
     )
   }
 
