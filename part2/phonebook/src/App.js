@@ -20,7 +20,6 @@ const App = () => {
     const newPersonObject = {
       name: newName,
       number: newNumber,
-      id: persons.length + 1
     }
 
     if (persons.find(person => person.name === newName)) {
@@ -48,6 +47,20 @@ const App = () => {
     setNewFilter(event.target.value)
   }
 
+  const removePersonWithId = id => {
+    const person = persons.find(person => person.id === id)
+    // show confirm dialog
+    if (window.confirm(`Are you sure you want to delete ${person.name} from your list?`)) {
+      // remove person from server
+      personService
+        .remove(id)
+        .then(() => {
+          // if succesful, refetch persons
+          setPersons(persons.filter(person => person.id !== id))
+        })
+    }
+  }
+
   const personsToShow = newFilter === ""
     ? persons
     : persons.filter(person => person.name.toLowerCase().includes(newFilter.toLowerCase()))
@@ -68,7 +81,10 @@ const App = () => {
         handleNumberChange={handleNumberChange}
       />
       <h2>Numbers</h2>
-      <Persons personsToShow={personsToShow} />
+      <Persons
+        personsToShow={personsToShow}
+        removePersonWithId={removePersonWithId}
+      />
     </div>
   )
 }
@@ -106,15 +122,17 @@ const PersonForm = (props) => {
   )
 }
 
-const Person = ({ name, number, id }) => (
-  <div key={id}>{name} {number}</div>
+const Person = ({ name, number, id, removePersonWithId }) => (
+  <div key={id}>
+    {name} {number} <button onClick={() => removePersonWithId(id)}>Delete</button>
+  </div>
 )
 
-const Persons = ({ personsToShow }) => {
+const Persons = ({ personsToShow, removePersonWithId }) => {
   return (
     personsToShow.map(person => {
       return (
-        <Person name={person.name} number={person.number} key={person.id} />
+        <Person name={person.name} number={person.number} key={person.id} id={person.id} removePersonWithId={removePersonWithId} />
       )
     })
   )
