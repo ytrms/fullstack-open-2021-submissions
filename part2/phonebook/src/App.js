@@ -7,15 +7,13 @@ const App = () => {
   const [newNumber, setNewNumber] = useState('')
   const [newFilter, setNewFilter] = useState('')
 
-  const hook = () => {
+  useEffect(() => {
     axios
       .get('http://localhost:3001/persons')
       .then((response) => {
         setPersons(response.data)
       })
-  }
-
-  useEffect(hook, [])
+  }, [])
 
   const addPerson = (event) => {
     event.preventDefault()
@@ -28,9 +26,13 @@ const App = () => {
     if (persons.find(person => person.name === newName)) {
       alert(`${newName} is already present in the phonebook.`)
     } else {
-      setPersons(persons.concat(newPersonObject))
-      setNewNumber('')
-      setNewName('')
+      axios
+        .post('http://localhost:3001/persons', newPersonObject)
+        .then(() => {
+          setPersons(persons.concat(newPersonObject))
+          setNewNumber('')
+          setNewName('')
+        })
     }
   }
 
