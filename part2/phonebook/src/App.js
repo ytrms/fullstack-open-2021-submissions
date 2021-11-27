@@ -17,13 +17,23 @@ const App = () => {
 
   const addPerson = (event) => {
     event.preventDefault()
-    const newPersonObject = {
+    let newPersonObject = {
       name: newName,
       number: newNumber,
     }
 
     if (persons.find(person => person.name === newName)) {
-      alert(`${newName} is already present in the phonebook.`)
+      if (window.confirm(`${newName} already exists. Update the associated number?`)) {
+        const person = persons.find(person => person.name === newName)
+        newPersonObject = { ...person, number: newPersonObject.number }
+        personService
+          .update(newPersonObject)
+          .then(response => {
+            setPersons(persons.map(person => person.id !== response.data.id ? person : response.data))
+            setNewName('')
+            setNewNumber('')
+          })
+      }
     } else {
       personService
         .create(newPersonObject)
