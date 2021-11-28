@@ -1,11 +1,23 @@
 import React, { useState, useEffect } from 'react'
 import personService from './services/persons'
 
+const Notification = ({ message }) => {
+  if (message === null) {
+    return null
+  }
+  return (
+    <div className="notification">
+      {message}
+    </div>
+  )
+}
+
 const App = () => {
   const [persons, setPersons] = useState([])
   const [newName, setNewName] = useState('')
   const [newNumber, setNewNumber] = useState('')
   const [newFilter, setNewFilter] = useState('')
+  const [notification, setNotification] = useState(null)
 
   useEffect(() => {
     personService
@@ -32,6 +44,10 @@ const App = () => {
             setPersons(persons.map(person => person.id !== response.data.id ? person : response.data))
             setNewName('')
             setNewNumber('')
+            setNotification(`${person.name} successfully updated.`)
+            setTimeout(() => {
+              setNotification(null)
+            }, (5000));
           })
       }
     } else {
@@ -41,6 +57,11 @@ const App = () => {
           setPersons(persons.concat(returnedPerson))
           setNewNumber('')
           setNewName('')
+          setNotification(`${returnedPerson.name} succesfully added.`)
+          setTimeout(() => {
+            setNotification(null)
+          }, (5000));
+
         })
     }
   }
@@ -67,6 +88,11 @@ const App = () => {
         .then(() => {
           // if succesful, refetch persons
           setPersons(persons.filter(person => person.id !== id))
+          setNotification(`${person.name} successfully removed.`)
+          setTimeout(() => {
+            setNotification(null)
+          }, (5000));
+
         })
     }
   }
@@ -78,6 +104,7 @@ const App = () => {
   return (
     <div>
       <h2>Phonebook</h2>
+      <Notification message={notification} />
       <Filter
         value={newFilter}
         handleFilterChange={handleFilterChange}
