@@ -5,8 +5,21 @@ const Notification = ({ message }) => {
   if (message === null) {
     return null
   }
+
   return (
-    <div className="notification">
+    <div className="info">
+      {message}
+    </div>
+  )
+}
+
+const Alert = ({ message }) => {
+  if (message === null) {
+    return null
+  }
+
+  return (
+    <div className="alert">
       {message}
     </div>
   )
@@ -18,6 +31,7 @@ const App = () => {
   const [newNumber, setNewNumber] = useState('')
   const [newFilter, setNewFilter] = useState('')
   const [notification, setNotification] = useState(null)
+  const [alert, setAlert] = useState(null)
 
   useEffect(() => {
     personService
@@ -92,6 +106,12 @@ const App = () => {
           setTimeout(() => {
             setNotification(null)
           }, (5000));
+        })
+        .catch(reason => {
+          setAlert(`${person.name} was already removed before.`)
+          setTimeout(() => {
+            setAlert(null)
+          }, (5000));
 
         })
     }
@@ -105,6 +125,7 @@ const App = () => {
     <div>
       <h2>Phonebook</h2>
       <Notification message={notification} />
+      <Alert message={alert} />
       <Filter
         value={newFilter}
         handleFilterChange={handleFilterChange}
